@@ -5,12 +5,13 @@ require_once('vendor/autoload.php');
 use Goutte\Client;
 
 include('domain_list_as_php_array.php');
-$batch_size = 10000;
+$batch_size = 20000;
 
 $index = 1;
 if(isset($argv[1])) {
 	$index = $argv[1];
 };
+
 $index = $index - 1;
 $source = array_slice($domains, $batch_size * $index, $batch_size);
 
