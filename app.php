@@ -53,22 +53,22 @@ foreach($source as $link) {
 		$crawl->filter('.rankingItem-value')->count() > 0 &&
 		$crawl->filter('.rankingItem-subTitle')->count() > 0
 	) {
-			fputcsv($fp, array(
+        write($fp, array(
 			$link,
 			$crawl->filter('.rankingItem-value')->first()->text(),
 			$crawl->filter('.rankingItem-value')->eq(1)->text(),
 			$crawl->filter('.rankingItem-value')->last()->text(),
 			$crawl->filter('.rankingItem-subTitle')->eq(1)->text(),
-		),';','"');
+		));
 
 	} else {
-			fputcsv($fp, array(
+			write($fp, array(
 			$link,
 			"no-data",
 			"no-data",
 			"no-data",
 			"no-data",
-		),';','"');
+		));
 	}
 	file_put_contents($last_position, $link);
     $elapsed_time = microtime(true) - $time;
@@ -76,4 +76,15 @@ foreach($source as $link) {
 }
 
 fclose($fp);
+
+
+function write($fp, $array) {
+    $tries = 0;
+    do {
+        $status = fputcsv($fp, $array, ';', '"');
+    }while($status === false && $tries++ <= 5);
+    if($status === false) {
+        throw new Exception('error writing to file');
+    }
+}
 
