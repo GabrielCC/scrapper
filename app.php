@@ -4,11 +4,17 @@ require_once('vendor/autoload.php');
 
 use Goutte\Client;
 
-include('mage-list.php');
-$source = $batch1;
-$index = 1;
+include('domain_list_as_php_array.php');
+$batch_size = 10000;
 
-$last_position = "flag-{$index}.txt";
+$index = 1;
+if(isset($argv[1])) {
+	$index = $argv[1];
+};
+$index = $index - 1;
+$source = array_slice($domains, $batch_size * $index, $batch_size);
+
+$last_position = "flags/flag-{$index}.txt";
 if(file_exists($last_position)) {
 	$lastClient = file_get_contents($last_position);
 	$index = array_search($lastClient, $source);
@@ -17,7 +23,7 @@ if(file_exists($last_position)) {
 	}
 }
 
-$file = "mage-batch-{$index}.csv";
+$file = "output/mage-batch-{$index}.csv";
 if(file_exists($file)) {
 	$fp = fopen($file, 'a');
 
@@ -36,6 +42,7 @@ if(file_exists($file)) {
 
 $client = new Client();
 foreach($source as $link) {
+    $time = microtime(true);
 
 	$url = 'https://www.similarweb.com/website/'. $link;
 
@@ -63,6 +70,8 @@ foreach($source as $link) {
 		),';','"');
 	}
 	file_put_contents($last_position, $link);
+    $elapsed_time = microtime(true) - $time;
+    var_dump($elapsed_time);
 }
 
 fclose($fp);
