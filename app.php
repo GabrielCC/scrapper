@@ -6,7 +6,8 @@ use Goutte\Client;
 
 include('domain_list_as_php_array.php');
 $batch_size = 20000;
-
+//var_dump(count($domains) / $batch_size);
+//die();
 $index = 1;
 if(isset($argv[1])) {
 	$index = $argv[1];
@@ -18,9 +19,9 @@ $source = array_slice($domains, $batch_size * $index, $batch_size);
 $last_position = "flags/flag-{$index}.txt";
 if(file_exists($last_position)) {
 	$lastClient = file_get_contents($last_position);
-	$index = array_search($lastClient, $source);
-	if($index !== false) {
-		$source = array_slice($source, $index);
+	$indexLast = array_search($lastClient, $source);
+	if($indexLast !== false) {
+		$source = array_slice($source, $indexLast);
 	}
 }
 
